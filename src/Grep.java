@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Grep {
 
     // Вывод строк, содержащих указанное слово
@@ -85,6 +84,8 @@ public class Grep {
         return result;
     }
 
+    // дополнительные методы :
+    
     // количество строк, содержащих указанное слово
     public int numberLines(String word, String pathName) throws IOException {
         return new Grep().findContentFromWord(word, pathName).size();
@@ -186,6 +187,3 @@ public class Grep {
         }
     }
 }
-
-// Vietnam,
-//[-v][-i][-r]

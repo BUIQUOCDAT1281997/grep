@@ -7,27 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class Grep {
 
-    // Вывод строк, содержащих указанное слово
-    public List<String> findContentFromWord(String word, String pathName) throws IOException {
-        File file = new File(pathName);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-        List<String> result = new ArrayList<>();
-        String line = br.readLine();
-        while (line != null) {
-            List<String> listWords = Arrays.asList(line.split(" "));
-            if (listWords.indexOf(word) != -1) {
-                //System.out.println(line);
-                result.add(line);
-            }
-            line = br.readLine();
-        }
-        return result;
-    }
-
-    // Вывод строк, содержащих указанное регулярное выражение
+    // Вывод строк, содержащих указанное регулярное выражение или указанное слово
     public List<String> findContentFromPhrase(String phrase, String pathName) throws IOException {
         File file = new File(pathName);
         FileReader fr = new FileReader(file);
@@ -37,16 +20,15 @@ public class Grep {
         while (line != null) {
             String[] str = line.split(phrase);
             if (str.length != 1) {
-                //System.out.println(line);
                 result.add(line);
             } else if (!line.equals(str[0])) {
-                //System.out.println(line);
                 result.add(line);
             }
             line = br.readLine();
         }
         return result;
     }
+
 
     // Вывод строк, содержащих указанное слово, игнорировать регистр слов
     public List<String> findContentIgnoreCase(String word, String pathName) throws IOException {
@@ -56,9 +38,10 @@ public class Grep {
         List<String> result = new ArrayList<>();
         String line = br.readLine();
         while (line != null) {
-            List<String> listWords = Arrays.asList(line.toLowerCase().split(" "));
-            if (listWords.indexOf(word.toLowerCase()) != -1) {
-                //System.out.println(line);
+            String[] str = line.toLowerCase().split(word.toLowerCase());
+            if (str.length != 1) {
+                result.add(line);
+            } else if (!line.toLowerCase().equals(str[0])) {
                 result.add(line);
             }
             line = br.readLine();
@@ -68,15 +51,14 @@ public class Grep {
 
     // Вывод строк, не содержащих указанное слово
     public List<String> invertsCondition(String word, String pathName) throws IOException {
+        List<String> gh = new Grep().findContentFromPhrase(word, pathName);
         File file = new File(pathName);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         List<String> result = new ArrayList<>();
         String line = br.readLine();
         while (line != null) {
-            List<String> listWord = Arrays.asList(line.split(" "));
-            if (listWord.indexOf(word) == -1) {
-                //System.out.println(line);
+            if (gh.indexOf(line) == -1) {
                 result.add(line);
             }
             line = br.readLine();
@@ -84,11 +66,9 @@ public class Grep {
         return result;
     }
 
-    // дополнительные методы :
-    
     // количество строк, содержащих указанное слово
     public int numberLines(String word, String pathName) throws IOException {
-        return new Grep().findContentFromWord(word, pathName).size();
+        return new Grep().findContentFromPhrase(word, pathName).size();
     }
 
     // Вычисление количества раз слово присутствует в тесте.
@@ -119,70 +99,72 @@ public class Grep {
         int number = 1;
         String result = "";
         while (line != null) {
-            List<String> listWords = Arrays.asList(line.split(" "));
-            if (listWords.indexOf(word) != -1) {
-                result += (number + " ");
+            String[] str = line.split(word);
+            if (str.length != 1) {
+                result += number + " ";
+            } else if (!line.equals(str[0])) {
+                result += number + " ";
             }
-            line = br.readLine();
             number++;
+            line = br.readLine();
         }
         if (result.equals("")) return "-1";
         return result.trim();
     }
+}
 
-
+class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Grep fileControl = new Grep();
-        try {
-            fileControl.positionLines("beautiful", "inputname.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         System.out.println("Enter the command : crep [-v][-i][-r] word inputname.txt\nEX : crep phone inputname.txt");
         String command = scanner.nextLine();
         String[] strs = command.split(" ");
-        switch (strs[1]) {
-            case "-i": {
-                try {
-                    for (String line : fileControl.findContentIgnoreCase(strs[2], strs[3])) {
-                        System.out.println(line);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (strs.length < 3 || !strs[0].equals("crep")) throw new Error("Input structure is incorrect!");
+        if (strs.length == 3) {
+            try {
+                for (String line : fileControl.findContentFromPhrase(strs[1], strs[2])) {
+                    System.out.println(line);
                 }
-                break;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            case "-v": {
-                try {
-                    for (String line : fileControl.invertsCondition(strs[2], strs[3])) {
-                        System.out.println(line);
+        } else {
+            if (strs[1].charAt(0) != '-') throw new Error("Input structure is incorrect!");
+            switch (strs[1]) {
+                case "-i": {
+                    try {
+                        for (String line : fileControl.findContentIgnoreCase(strs[2], strs[3])) {
+                            System.out.println(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    break;
                 }
-                break;
-            }
-            case "-r": {
-                String pathName = strs[strs.length - 1];
-                String phrase = command.substring(command.indexOf('r', 2) + 2, command.length() - pathName.length() - 1);
-                try {
-                    for (String line : fileControl.findContentFromPhrase(phrase, pathName)) {
-                        System.out.println(line);
+                case "-v": {
+                    try {
+                        for (String line : fileControl.invertsCondition(strs[2], strs[3])) {
+                            System.out.println(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    break;
                 }
-                break;
-            }
-            default: {
-                try {
-                    for (String line : fileControl.findContentFromWord(strs[1], strs[2])) {
-                        System.out.println(line);
+                case "-r": {
+                    String pathName = strs[strs.length - 1];
+                    String phrase = command.substring(command.indexOf('r', 2) + 2, command.length() - pathName.length() - 1);
+                    try {
+                        for (String line : fileControl.findContentFromPhrase(phrase, pathName)) {
+                            System.out.println(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    break;
                 }
+
             }
         }
     }

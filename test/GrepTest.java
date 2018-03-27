@@ -1,40 +1,23 @@
 
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class GrepTest {
 
     Grep grep = new Grep();
 
-    @Test
-    void findContentFromWord() {
-        List<String> list = new ArrayList<>();
-        list.add("the most beautiful woman, and my dad is the most wonderful man. And my grandma name is ");
-        list.add("my sister. Her name is Linh. She is 26 years old, and she is a beautiful woman like Mom. Now, she ");
-        try {
-            assertEquals(list, grep.findContentFromWord("beautiful", "inputname.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @org.junit.jupiter.api.Test
     void findContentFromPhrase() {
         String str = "";
         try {
-            for (String element : grep.findContentFromPhrase("Vietnam", "inputname.txt")) {
+            for (String element : grep.findContentFromPhrase("Viet nam", "inputname.txt")) {
                 str += element + "\n";
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(str, "As a traditional family in Vietnam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
-                "is living in Ha Noi capital Vietnam, because of her jobs. I really love my family, and I hope that we \n");
+        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
+                "is living in Ha Noi capital Viet nam, because of her jobs. I really love my family, and I hope that we \n");
     }
 
     @org.junit.jupiter.api.Test
@@ -47,12 +30,12 @@ class GrepTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(str, "As a traditional family in Vietnam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
+        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
                 "Grandma, sister, and me. My mom name is Giang. She has long hair and black eyes. She is a \n" +
                 "teacher. My Dad name is Trung. He is tall and very strong. His job is doctor. For me, my mom is \n" +
                 "the most beautiful woman, and my dad is the most wonderful man. And my grandma name is \n" +
                 "my sister. Her name is Linh. She is 26 years old, and she is a beautiful woman like Mom. Now, she \n" +
-                "is living in Ha Noi capital Vietnam, because of her jobs. I really love my family, and I hope that we \n");
+                "is living in Ha Noi capital Viet nam, because of her jobs. I really love my family, and I hope that we \n");
     }
 
     @org.junit.jupiter.api.Test
@@ -65,7 +48,7 @@ class GrepTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(str, "As a traditional family in Vietnam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
+        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
                 "Grandma, sister, and me. My mom name is Giang. She has long hair and black eyes. She is a \n" +
                 "Tam. She is 95 years old, and next 5 years, we will organize the 100th longevity wishing ceremony, \n" +
                 "and I look forward to taking part in this ceremony. Besides, another woman who I love so much is \n" +

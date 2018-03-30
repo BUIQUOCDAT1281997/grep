@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Grep {
 
     // Вывод строк, содержащих указанное регулярное выражение или указанное слово
@@ -28,7 +27,6 @@ public class Grep {
         }
         return result;
     }
-
 
     // Вывод строк, содержащих указанное слово, игнорировать регистр слов
     public List<String> findContentIgnoreCase(String word, String pathName) throws IOException {
@@ -164,7 +162,6 @@ class Main {
                     }
                     break;
                 }
-
             }
         }
     }

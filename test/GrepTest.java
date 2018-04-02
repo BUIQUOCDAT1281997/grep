@@ -1,92 +1,42 @@
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GrepTest {
 
-    Grep grep = new Grep();
-
     @org.junit.jupiter.api.Test
-    void findContentFromPhrase() {
-        String str = "";
+    void findContent() {
+        Grep grep = new Grep();
         try {
-            for (String element : grep.findContentFromPhrase("Viet nam", "inputname.txt")) {
-                str += element + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
-                "is living in Ha Noi capital Viet nam, because of her jobs. I really love my family, and I hope that we \n");
-    }
+            // Вывод строк, содержащих указанное слово
+            List<String> word = new ArrayList<>();
+            word.add("As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, ");
+            word.add("is living in Ha Noi capital Viet nam, because of her jobs. I really love my family, and I hope that we ");
+            assertEquals(grep.findContent("Viet", "inputname.txt", "word"), word);
 
-    @org.junit.jupiter.api.Test
-    void findContentIgnoreCase() {
-        String str = "";
-        try {
-            for (String element : grep.findContentIgnoreCase("my", "inputname.txt")) {
-                str += element + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
-                "Grandma, sister, and me. My mom name is Giang. She has long hair and black eyes. She is a \n" +
-                "teacher. My Dad name is Trung. He is tall and very strong. His job is doctor. For me, my mom is \n" +
-                "the most beautiful woman, and my dad is the most wonderful man. And my grandma name is \n" +
-                "my sister. Her name is Linh. She is 26 years old, and she is a beautiful woman like Mom. Now, she \n" +
-                "is living in Ha Noi capital Viet nam, because of her jobs. I really love my family, and I hope that we \n");
-    }
+            //Вывод строк, содержащих указанное слово, игнорировать регистр слов
+            List<String> ignoreCase = new ArrayList<>();
+            ignoreCase.add("Grandma, sister, and me. My mom name is Giang. She has long hair and black eyes. She is a ");
+            assertEquals(grep.findContent("GIANG", "inputname.txt", "-i"), ignoreCase);
 
-    @org.junit.jupiter.api.Test
-    void invertsCondition() {
-        String str = "";
-        try {
-            for (String element : grep.invertsCondition("my", "inputname.txt")) {
-                str += element + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(str, "As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, \n" +
-                "Grandma, sister, and me. My mom name is Giang. She has long hair and black eyes. She is a \n" +
-                "Tam. She is 95 years old, and next 5 years, we will organize the 100th longevity wishing ceremony, \n" +
-                "and I look forward to taking part in this ceremony. Besides, another woman who I love so much is \n" +
-                "are always together anyway.\n");
-    }
+            //Вывод строк, содержащих указанное регулярное выражение
+            List<String> regex = new ArrayList<>();
+            regex.add("Tam. She is 95 years old, and next 5 years, we will organize the 100th longevity wishing ceremony, ");
+            regex.add("my sister. Her name is Linh. She is 26 years old, and she is a beautiful woman like Mom. Now, she ");
+            assertEquals(grep.findContent(".*(She is).[0-9][0-9].*", "inputname.txt", "-r"), regex);
 
-    @org.junit.jupiter.api.Test
-    void numberLines() {
-        try {
-            assertEquals(7, grep.numberLines("is", "inputname.txt"));
-            assertEquals(4, grep.numberLines("name", "inputname.txt"));
-            assertEquals(2, grep.numberLines("beautiful", "inputname.txt"));
-            assertEquals(0, grep.numberLines("QuocDat", "inputname.txt"));
+            // Вывод строк, не содержащих указанное слово
+            List<String> invertsCondition = new ArrayList<>();
+            invertsCondition.add("As a traditional family in Viet nam, I have a big one. My family has 5 members, including Mom, Dad, ");
+            invertsCondition.add("are always together anyway.");
+            assertEquals(grep.findContent("is", "inputname.txt", "-v"), invertsCondition);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @org.junit.jupiter.api.Test
-    void countMatches() {
 
-        try {
-            assertEquals(14, grep.countMatches("is", "inputname.txt"));
-            assertEquals(4, grep.countMatches("name", "inputname.txt"));
-            assertEquals(0, grep.countMatches("QuocDat", "inputname.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @org.junit.jupiter.api.Test
-    void positionLines() {
-        try {
-            assertEquals("4 7", grep.positionLines("beautiful", "inputname.txt"));
-            assertEquals("2 3 4 5 6 7 8", grep.positionLines("is", "inputname.txt"));
-            assertEquals("-1", grep.positionLines("QuocDat", "inputname.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

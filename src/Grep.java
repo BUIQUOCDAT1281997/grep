@@ -3,42 +3,61 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Grep {
 
-    public List<String> findContent(String wordOrRegex, String pathName, String gr) throws IOException {
+    // private boolean word = false;
+    private boolean commandR = false;
+    private boolean commandI = false;
+    private boolean commandV = false;
+
+    public void setCommandR(boolean commandR) {
+        this.commandR = commandR;
+    }
+
+    public void setCommandI(boolean commandI) {
+        this.commandI = commandI;
+    }
+
+    public void setCommandV(boolean commandV) {
+        this.commandV = commandV;
+    }
+
+  /*  public void setWord(boolean word) {
+        this.word = word;
+    }*/
+
+    public List<String> findContent(String wordOrRegex, String pathName) throws IOException {
+
         File file = new File(pathName);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
+
         List<String> result = new ArrayList<>();
         String line = br.readLine();
+        boolean status = false;
+
         while (line != null) {
-            switch (gr) {
-                case "word": {
-                    if (line.matches(".*(" + wordOrRegex + ").*")) {
-                        result.add(line);
-                    }
-                    break;
+            String toRegex = "";
+            if (this.commandR) {
+                toRegex = wordOrRegex;
+            } else {
+                for (int i = 0; i < wordOrRegex.length(); i++) {
+                    toRegex += ("[" + wordOrRegex.charAt(i) + "]");
                 }
-                case "-r": {
-                    if (line.matches(wordOrRegex)) {
-                        result.add(line);
-                    }
-                    break;
-                }
-                case "-v": {
-                    if (!line.matches(".*(" + wordOrRegex + ").*")) {
-                        result.add(line);
-                    }
-                    break;
-                }
-                case "-i": {
-                    if (line.toLowerCase().matches(".*(" + wordOrRegex.toLowerCase() + ").*")) {
-                        result.add(line);
-                    }
-                    break;
-                }
+                toRegex = ".*" + toRegex + ".*";
+            }
+            status = line.matches(toRegex);
+            if (this.commandI && !status) {
+                status = line.toLowerCase().matches(toRegex.toLowerCase());
+            }
+            if (this.commandV) {
+                status = !status;
+            }
+            if (status) {
+                result.add(line);
             }
             line = br.readLine();
         }
@@ -46,26 +65,25 @@ public class Grep {
     }
 
     public static void main(String[] args) {
-        Grep fileControl = new Grep();
-        if (args.length < 3 || args.length > 4 || !args[0].equals("crep"))
+        Grep find = new Grep();
+        List<String> cmdLine = Arrays.asList(args);
+        if (cmdLine.size() < 2 || cmdLine.size() > 5)
             throw new Error("Input structure is incorrect!");
-        if (args.length == 3) {
-            try {
-                for (String line : fileControl.findContent(args[1], args[2], "word")) {
-                    System.out.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (cmdLine.contains("-r")) {
+            find.setCommandR(true);
+        }
+        if (cmdLine.contains("-i")) {
+            find.setCommandI(true);
+        }
+        if (cmdLine.contains("-v")) {
+            find.setCommandV(true);
+        }
+        try {
+            for (String line : find.findContent(cmdLine.get(cmdLine.size() - 2), cmdLine.get(cmdLine.size() - 1))) {
+                System.out.println(line);
             }
-        } else {
-            if (args[1].charAt(0) != '-') throw new Error("Input structure is incorrect!");
-            try {
-                for (String line : fileControl.findContent(args[2], args[3], args[1])) {
-                    System.out.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

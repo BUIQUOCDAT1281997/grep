@@ -15,9 +15,9 @@ public class Grep {
 
     private String wordOrRegex, pathName;
 
-    public Grep(String word, String filename){
-        this.wordOrRegex=word;
-        this.pathName= filename;
+    public Grep(String word, String filename) {
+        this.wordOrRegex = word;
+        this.pathName = filename;
     }
 
     public void setCommandR(boolean commandR) {
@@ -43,20 +43,10 @@ public class Grep {
         boolean status;
 
         while (line != null) {
-            String toRegex;
-            if (this.commandR) {
-                toRegex = wordOrRegex;
-            } else {
-                toRegex = ".*" + Pattern.quote(wordOrRegex) + ".*";
-            }
-            Pattern p;
-            if (this.commandI){
-                p = Pattern.compile(toRegex,Pattern.CASE_INSENSITIVE);
-            }else {
-                p= Pattern.compile(toRegex);
-            }
+            String toRegex = (this.commandR) ? wordOrRegex : (".*" + Pattern.quote(wordOrRegex) + ".*");
+            Pattern p = (this.commandI) ? (Pattern.compile(toRegex, Pattern.CASE_INSENSITIVE)) : (Pattern.compile(toRegex));
             Matcher m = p.matcher(line);
-            status=m.matches();
+            status = m.matches();
             if (this.commandV) {
                 status = !status;
             }
